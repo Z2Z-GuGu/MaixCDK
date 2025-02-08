@@ -82,3 +82,5 @@ examples/*/dist/
 projects/*/dist/
 examples/*/data/
 projects/*/data/
+kvm/kvm_system/.DS_Store
+kvm/.DS_Store

@@ -48,24 +48,28 @@ namespace maix::peripheral::i2c
         char buf[32];
 
         snprintf(buf, sizeof(buf), DEV_PATH, id);
-        if (mode == i2c::SLAVE)
-        {
-            throw err::Exception(err::Err::ERR_NOT_IMPL, "i2c::SLAVE mode not implemented");
-        }
-        if (addr_size != i2c::SEVEN_BIT)
-        {
-            throw err::Exception(err::Err::ERR_NOT_IMPL, "addr_size " + std::to_string(addr_size) + " not support");
-        }
+        if(access(buf, F_OK) == 0){
+            if (mode == i2c::SLAVE)
+            {
+                throw err::Exception(err::Err::ERR_NOT_IMPL, "i2c::SLAVE mode not implemented");
+            }
+            if (addr_size != i2c::SEVEN_BIT)
+            {
+                throw err::Exception(err::Err::ERR_NOT_IMPL, "addr_size " + std::to_string(addr_size) + " not support");
+            }
 
-        int fd = ::open(buf, O_RDWR);
-        if (fd < 0)
-        {
-            throw err::Exception(err::Err::ERR_IO, "open " + std::string(buf) + " failed");
+            int fd = ::open(buf, O_RDWR);
+            if (fd < 0)
+            {
+                throw err::Exception(err::Err::ERR_IO, "open " + std::string(buf) + " failed");
+            }
+            _fd = fd;
+            _freq = freq;
+            _mode = mode;
+            _addr_size = addr_size;
+        } else {
+            printf("not exit i2c?\r\n");
         }
-        _fd = fd;
-        _freq = freq;
-        _mode = mode;
-        _addr_size = addr_size;
     }
 
     I2C::~I2C()
@@ -128,7 +132,7 @@ namespace maix::peripheral::i2c
 
         if (0 != ioctl(_fd, I2C_SLAVE, addr))
         {
-            log::error("set slave address failed");
+            // log::error("set slave address failed");
             return (int)-err::Err::ERR_IO;
         }
 
@@ -163,7 +167,7 @@ namespace maix::peripheral::i2c
 
         if (0 != ioctl(_fd, I2C_SLAVE, addr))
         {
-            log::error("set slave address failed");
+            // log::error("set slave address failed");
             return nullptr;
         }
 
@@ -191,7 +195,7 @@ namespace maix::peripheral::i2c
 
         if (0 != ioctl(_fd, I2C_SLAVE, addr))
         {
-            log::error("set slave address failed");
+            // log::error("set slave address failed");
             return (int)-err::Err::ERR_IO;
         }
 
@@ -260,7 +264,7 @@ namespace maix::peripheral::i2c
         // write mem_addr first and restart to read
         if (0 != ioctl(_fd, I2C_SLAVE, addr))
         {
-            log::error("set slave address failed");
+            // log::error("set slave address failed");
             return nullptr;
         }
 
